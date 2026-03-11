@@ -8,10 +8,25 @@ Aplicación web moderna para el seguimiento de asistencia del equipo de rugby Fu
 - ✅ Marcar jugadores como: Presente, Lesionado-Presente, Lesionado-Ausente, Viaje, Estudio, Desconocido
 - 📅 Navegación por fechas (anterior/siguiente/hoy)
 - 🔍 Búsqueda de jugadores en tiempo real
+- 🎯 Filtros rápidos por estado de asistencia
 - 📊 Estadísticas en tiempo real por sesión
 - 🎯 Detección automática de sesiones de entrenamiento
 
-### 📈 Estadísticas Avanzadas
+### � Autenticación y Seguridad
+- **Login seguro** con Firebase Authentication
+- **Recordar email** - Guarda tu email para próximas sesiones
+- **Persistencia de sesión** - Mantiene tu sesión iniciada
+- **API Key protegida** - Restricciones por dominio configuradas
+- **Reglas de seguridad** - Solo usuarios autenticados pueden acceder
+
+### 📱 PWA (Progressive Web App)
+- **Instalable en móviles** - Funciona como app nativa
+- **Ícono en pantalla de inicio** - Acceso rápido
+- **Pantalla completa** - Sin barra del navegador
+- **Service Worker** - Carga más rápida
+- **Funciona offline** - Acceso básico sin conexión
+
+### � Estadísticas Avaanzadas
 - **Vista de estadísticas completa** con:
   - Resumen general (total jugadores, sesiones, % asistencia promedio)
   - Estadísticas detalladas por jugador
@@ -19,7 +34,8 @@ Aplicación web moderna para el seguimiento de asistencia del equipo de rugby Fu
   - Ordenamiento por mejor asistencia
 
 ### 📊 Exportación de Datos
-- **Excel (.xlsx)** - Exporta la asistencia del día actual con resumen
+- **Excel múltiple** - Selecciona y exporta múltiples fechas a la vez
+- **Excel de día actual** - Exporta la asistencia del día con resumen
 - **Excel de Estadísticas** - Exporta 3 hojas:
   1. Estadísticas por jugador (presentes, ausentes, % asistencia)
   2. Resumen general del equipo
@@ -37,31 +53,36 @@ Aplicación web moderna para el seguimiento de asistencia del equipo de rugby Fu
 - Backup local automático (localStorage)
 - Funciona offline con sincronización posterior
 
-## 🚀 Instalación
+## 🚀 Instalación y Acceso
 
-### Opción 1: Uso Local (Sin Firebase)
-1. Descarga todos los archivos
-2. Abre `index.html` en tu navegador
-3. Los datos se guardan localmente en tu navegador
+### 🌐 Acceso Online (Recomendado)
+**URL:** https://asistenciam-18.netlify.app
 
-### Opción 2: Con Firebase (Recomendado)
-1. Sigue las instrucciones en `FIREBASE_SETUP.md`
-2. Configura tu proyecto Firebase (gratis)
-3. Actualiza las credenciales en `app.js`
-4. Sube los archivos a tu hosting (Hostinger, etc.)
+La aplicación está desplegada en Netlify con deploy automático desde GitHub.
 
-## 📱 Uso desde Móvil
-
-### Agregar a Pantalla de Inicio
-**iOS (Safari):**
-1. Abre la URL en Safari
-2. Toca el botón compartir (cuadrado con flecha)
-3. Selecciona "Agregar a pantalla de inicio"
+### 📱 Instalar como App en Móvil
+Ver guía completa: [INSTALAR_EN_MOVIL.md](docs/INSTALAR_EN_MOVIL.md)
 
 **Android (Chrome):**
 1. Abre la URL en Chrome
-2. Toca el menú (3 puntos)
-3. Selecciona "Agregar a pantalla de inicio"
+2. Toca "Agregar a pantalla de inicio"
+3. Confirma la instalación
+
+**iPhone (Safari):**
+1. Abre la URL en Safari
+2. Toca el botón compartir (□↑)
+3. Selecciona "Añadir a pantalla de inicio"
+
+### 💻 Desarrollo Local
+1. Clona el repositorio:
+```bash
+git clone https://github.com/pcoy06/rugby-attendance-tracker.git
+cd rugby-attendance-tracker
+```
+
+2. Abre con Live Server o cualquier servidor local
+
+3. Accede a `http://localhost:5500`
 
 ## 🎨 Características de Diseño
 
@@ -103,14 +124,24 @@ Edita `DEFAULT_ROSTER` en `app.js` para cambiar la lista inicial de jugadores.
 - SheetJS (xlsx) para exportación a Excel
 - LocalStorage para backup local
 
-## 📦 Archivos
+## � Documentación Completa
 
-- `index.html` - Estructura de la aplicación
-- `app.js` - Lógica de la aplicación
-- `styles.css` - Estilos y diseño
-- `logo-fuengirola.png` - Logo del club
-- `FIREBASE_SETUP.md` - Guía de configuración Firebase
-- `README.md` - Este archivo
+Toda la documentación está organizada en la carpeta `docs/`:
+
+### 📖 Para Usuarios
+- **[Instalar en Móvil](docs/INSTALAR_EN_MOVIL.md)** - Guía paso a paso para instalar la PWA
+- **[Filtros Rápidos](docs/FILTROS_RAPIDOS.md)** - Cómo usar los filtros de estado
+- **[Ayuda con Descargas](docs/AYUDA_DESCARGAS.md)** - Solución de problemas con Excel
+
+### 🔧 Para Desarrolladores
+- **[Comandos Git](GIT_COMMANDS.md)** - Guía completa de Git para el proyecto
+- **[Configuración Firebase](docs/FIREBASE_SETUP.md)** - Setup de Firebase Database
+- **[Configuración Autenticación](docs/AUTHENTICATION_SETUP.md)** - Setup de Firebase Auth
+- **[Seguridad Configurada](docs/SEGURIDAD_CONFIGURADA.md)** - Estado actual de seguridad
+- **[Solucionar API Key Expuesta](docs/SOLUCIONAR_API_KEY_EXPUESTA.md)** - Guía de seguridad
+
+### 📋 Índice de Documentación
+Ver [docs/README.md](docs/README.md) para el índice completo.
 
 ## 💰 Costos
 
@@ -136,13 +167,21 @@ Si encuentras problemas:
 
 ## 🎯 Próximas Mejoras Sugeridas
 
-- [ ] Autenticación de usuarios (entrenadores)
+- [x] Autenticación de usuarios (entrenadores) ✅
+- [x] Exportación múltiple a Excel ✅
+- [x] PWA instalable ✅
+- [x] Recordar sesión ✅
+- [x] Filtros por estado ✅
 - [ ] Notificaciones push para recordatorios
 - [ ] Gráficos de tendencias de asistencia
 - [ ] Exportar a Google Sheets
-- [ ] Modo offline completo con PWA
 - [ ] Comentarios por jugador/sesión
+- [ ] Gestión de múltiples equipos
 
 ---
 
-Desarrollado para Fuengirola RC M-18 🏉
+**Desarrollado con ❤️ para Fuengirola RC M-18** 🏉
+
+**Repositorio:** https://github.com/pcoy06/rugby-attendance-tracker  
+**Deploy:** https://asistenciam-18.netlify.app  
+**Contacto:** pcoy06@gmail.com
