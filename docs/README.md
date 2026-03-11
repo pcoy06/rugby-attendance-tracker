@@ -4,6 +4,9 @@ Esta carpeta contiene guías y documentación para configurar y usar la aplicaci
 
 ## 📖 Guías Disponibles
 
+### 📱 [INSTALAR_EN_MOVIL.md](./INSTALAR_EN_MOVIL.md) ⭐ NUEVO
+Guía paso a paso para instalar la app en tu celular y crear un acceso directo en la pantalla de inicio.
+
 ### 🔐 [AUTHENTICATION_SETUP.md](./AUTHENTICATION_SETUP.md)
 Guía completa para configurar el sistema de autenticación de la aplicación.
 
