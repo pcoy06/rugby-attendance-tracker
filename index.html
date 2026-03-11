@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fuengirola RC M-18 — Attendance Tracker</title>
+  <meta name="description"
+    content="Sleek attendance tracking app for rugby club training sessions. Track player presence, injuries, travel, and more." />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="logo-fuengirola.png" />
+  <link rel="shortcut icon" type="image/png" href="logo-fuengirola.png" />
+  
+  <!-- PWA Configuration -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#00e676" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Rugby M-18" />
+  <link rel="apple-touch-icon" href="logo-fuengirola.png" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+  <div class="app-wrapper">
+    <!-- Background orbs -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="login-screen">
+      <div class="login-card glass-card">
+        <div class="login-header">
+          <div class="logo-badge">
+            <img src="logo-fuengirola.png" alt="Fuengirola Rugby Club" class="logo-img" />
+          </div>
+          <h1 class="login-title">Fuengirola RC <span class="title-m18">M-18</span></h1>
+          <p class="login-subtitle">Attendance Tracker</p>
+        </div>
+        
+        <div class="login-form">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" placeholder="entrenador@fuengirolarc.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          
+          <div class="form-group remember-group">
+            <label class="remember-checkbox">
+              <input type="checkbox" id="remember-email" />
+              <span class="checkmark"></span>
+              Recordar email
+            </label>
+          </div>
+          
+          <button class="action-btn btn-primary btn-block" id="login-btn">
+            🔐 Iniciar Sesión
+          </button>
+          <div class="login-error" id="login-error" hidden></div>
+        </div>
+        
+        <div class="login-footer">
+          <p>Solo para entrenadores autorizados</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App (hidden until logged in) -->
+    <div class="main-app" id="main-app" hidden>
+
+    <!-- Header -->
+    <header class="app-header glass-card">
+      <div class="header-left">
+        <div class="logo-badge">
+          <img src="logo-fuengirola.png" alt="Fuengirola Rugby Club" class="logo-img" />
+        </div>
+        <div class="header-info">
+          <h1 class="app-title">Fuengirola RC <span class="title-m18">M-18</span></h1>
+          <div class="session-badge" id="session-badge">
+            <span class="session-dot" id="session-dot"></span>
+            <span id="session-label">Detecting session…</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-center">
+        <span class="header-center-text">Asistencia a Entrenamientos</span>
+      </div>
+      <div class="header-right">
+        <div class="date-controls">
+          <button class="date-btn" id="prev-day" aria-label="Previous day">‹</button>
+          <div class="date-display">
+            <span class="date-label">Session Date</span>
+            <input type="date" id="date-picker" class="date-input" aria-label="Select session date" />
+          </div>
+          <button class="date-btn" id="next-day" aria-label="Next day">›</button>
+        </div>
+        <button class="today-btn" id="today-btn" aria-label="Go to today">Today</button>
+        <button class="logout-btn" id="logout-btn" title="Cerrar sesión">
+          <span class="logout-icon">🚪</span>
+          <span class="logout-text">Salir</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Stats bar -->
+    <section class="stats-bar glass-card" aria-label="Attendance summary">
+      <div class="stat-item" id="stat-present">
+        <span class="stat-value" id="count-present">0</span>
+        <span class="stat-label">Present</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item" id="stat-sick">
+        <span class="stat-value" id="count-sick">0</span>
+        <span class="stat-label">Lesionado-Presente</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item" id="stat-injured">
+        <span class="stat-value" id="count-injured">0</span>
+        <span class="stat-label">Lesionado-Ausente</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item" id="stat-travel">
+        <span class="stat-value" id="count-travel">0</span>
+        <span class="stat-label">Viaje</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item" id="stat-study">
+        <span class="stat-value" id="count-study">0</span>
+        <span class="stat-label">Estudio</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item" id="stat-unknown">
+        <span class="stat-value" id="count-unknown">0</span>
+        <span class="stat-label">Desconocido</span>
+      </div>
+    </section>
+
+    <!-- Player toolbar -->
+    <div class="toolbar glass-card">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search player…" class="search-input"
+          aria-label="Search players" />
+      </div>
+      
+      <div class="filter-chips" id="filter-chips">
+        <button class="filter-chip active" data-filter="all" title="Show all players">
+          <span class="chip-icon">👥</span> Todos
+        </button>
+        <button class="filter-chip" data-filter="present" title="Show only present">
+          <span class="chip-icon">✅</span> Presentes
+        </button>
+        <button class="filter-chip" data-filter="sick" title="Show only injured-present">
+          <span class="chip-icon">🤕</span> Les-Pres
+        </button>
+        <button class="filter-chip" data-filter="injured" title="Show only injured-absent">
+          <span class="chip-icon">🤕</span> Les-Aus
+        </button>
+        <button class="filter-chip" data-filter="travel" title="Show only travel">
+          <span class="chip-icon">✈️</span> Viaje
+        </button>
+        <button class="filter-chip" data-filter="study" title="Show only study">
+          <span class="chip-icon">📚</span> Estudio
+        </button>
+        <button class="filter-chip" data-filter="unknown" title="Show only unknown">
+          <span class="chip-icon">❓</span> Desconocido
+        </button>
+      </div>
+      
+      <div class="toolbar-actions">
+        <button class="action-btn btn-primary" id="mark-all-present" title="Mark all visible players as present">✔ All
+          Present</button>
+        <button class="action-btn btn-secondary" id="reset-all" title="Reset all to Unknown">↺ Reset</button>
+        <button class="action-btn btn-accent" id="add-player-btn" title="Add new player">+ Player</button>
+        <button class="action-btn btn-stats" id="stats-btn" title="View statistics">📈 Stats</button>
+        <button class="action-btn btn-export" id="export-excel-btn" title="Export to Excel">📊 Excel</button>
+        <button class="action-btn btn-print" id="print-btn" title="Print report">🖨️ Print</button>
+      </div>
+    </div>
+
+    <!-- Player table -->
+    <main class="table-container glass-card" aria-label="Player attendance list">
+      <table class="player-table" id="player-table" role="grid" aria-label="Player attendance">
+        <thead>
+          <tr>
+            <th class="col-num">#</th>
+            <th class="col-name" scope="col">Jugador</th>
+            <th class="col-status" scope="col">
+              <span class="status-legend" data-status="present" title="Presente">✅</span> Presente
+            </th>
+            <th class="col-status" scope="col">
+              <span class="status-legend" data-status="sick" title="Lesionado-Presente">�</span> <span
+                class="th-sick">Lesionado-<br>Presente</span>
+            </th>
+            <th class="col-status" scope="col">
+              <span class="status-legend" data-status="injured" title="Lesionado-Ausente">🤕</span> Lesionado-<br>Ausente
+            </th>
+            <th class="col-status" scope="col">
+              <span class="status-legend" data-status="travel" title="Viaje">✈️</span> Viaje
+            </th>
+            <th class="col-status" scope="col">
+              <span class="status-legend" data-status="study" title="Estudio">📚</span> Estudio
+            </th>
+            <th class="col-status" scope="col">
+              <span class="status-legend" data-status="unknown" title="Desconocido">❓</span> Desconocido
+            </th>
+            <th class="col-actions" scope="col"></th>
+          </tr>
+        </thead>
+        <tbody id="player-tbody">
+          <!-- Rows injected by JS -->
+        </tbody>
+      </table>
+      <div class="empty-state" id="empty-state" hidden>
+        <span class="empty-icon">🏉</span>
+        <p>No players found. Add a player to get started!</p>
+      </div>
+    </main>
+
+    <!-- Add player modal -->
+    <div class="modal-overlay" id="modal-overlay" hidden aria-modal="true" role="dialog" aria-labelledby="modal-title">
+      <div class="modal glass-card">
+        <h2 class="modal-title" id="modal-title">Add Player</h2>
+        <div class="form-group">
+          <label for="new-player-name">Name</label>
+          <input type="text" id="new-player-name" placeholder="e.g. Liam O'Brien" autocomplete="off" />
+        </div>
+
+        <div class="modal-actions">
+          <button class="action-btn btn-secondary" id="modal-cancel">Cancel</button>
+          <button class="action-btn btn-primary" id="modal-confirm">Add Player</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics modal -->
+    <div class="modal-overlay" id="stats-modal-overlay" hidden aria-modal="true" role="dialog">
+      <div class="modal modal-large glass-card">
+        <div class="modal-header">
+          <h2 class="modal-title">📈 Estadísticas de Asistencia</h2>
+          <button class="modal-close-btn" id="stats-modal-close" aria-label="Close">✕</button>
+        </div>
+        
+        <div class="stats-content" id="stats-content">
+          <!-- Content injected by JS -->
+        </div>
+
+        <div class="modal-actions">
+          <button class="action-btn btn-export" id="export-stats-excel">📊 Export Stats to Excel</button>
+          <button class="action-btn btn-secondary" id="stats-modal-cancel">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date selection modal for Excel export -->
+    <div class="modal-overlay" id="date-selection-modal" hidden aria-modal="true" role="dialog">
+      <div class="modal modal-medium glass-card">
+        <div class="modal-header">
+          <h2 class="modal-title">📅 Seleccionar Fechas para Exportar</h2>
+          <button class="modal-close-btn" id="date-selection-close" aria-label="Close">✕</button>
+        </div>
+        
+        <div class="date-selection-content">
+          <p class="date-selection-description">Selecciona las fechas que deseas incluir en el archivo Excel:</p>
+          <div class="date-selection-list" id="date-selection-list">
+            <!-- Date checkboxes injected by JS -->
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="action-btn btn-secondary" id="date-selection-cancel">Cancelar</button>
+          <button class="action-btn btn-primary" id="date-selection-confirm">📊 Exportar Seleccionadas</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast notifications -->
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <span>Rugby Attendance Tracker · Mon/Wed 18:00–20:00 · Fri 20:00–21:00</span>
+      <span id="last-saved"></span>
+      <span id="sync-status" class="sync-status">🔄 Syncing...</span>
+    </footer>
+    
+    </div><!-- End main-app -->
+  </div><!-- End app-wrapper -->
+
+  <!-- Print styles -->
+  <style media="print">
+    @page { margin: 1cm; }
+    body { background: white !important; }
+    .bg-orb, .toolbar, .app-footer, .btn-delete, .header-right, 
+    .toolbar-actions, .search-wrapper, .date-controls, .today-btn { display: none !important; }
+    .glass-card { background: white !important; border: 1px solid #ccc !important; 
+                  box-shadow: none !important; backdrop-filter: none !important; }
+    .app-header { padding: 10px !important; border-bottom: 2px solid #333; }
+    .header-left { margin-bottom: 10px; }
+    .header-center { display: block !important; }
+    .header-center-text { font-size: 14pt !important; font-weight: bold !important; color: #000 !important; }
+    .header-center-text::before { 
+      content: 'Fecha: ' attr(data-print-date) ' - '; 
+      font-weight: bold; 
+    }
+    .stats-bar { border: 1px solid #ddd; margin: 10px 0; page-break-inside: avoid; }
+    .stat-item { min-width: auto !important; }
+    .stat-value { color: #000 !important; }
+    .stat-label { color: #666 !important; }
+    .player-table { font-size: 10pt; }
+    .player-table thead { background: #f5f5f5 !important; }
+    .player-table th { color: #000 !important; border: 1px solid #999 !important; }
+    .player-table th, .player-table td { padding: 6px !important; border: 1px solid #ddd; }
+    .status-radio { width: 16px !important; height: 16px !important; }
+    .status-radio:checked { background: #000 !important; }
+    .status-radio:checked::after { background: #000 !important; }
+    .player-row[data-status="present"] { background: #e8f5e9 !important; }
+    .player-row[data-status="sick"] { background: #f3e5f5 !important; }
+    .player-row[data-status="injured"] { background: #ffebee !important; }
+    .player-row[data-status="travel"] { background: #e3f2fd !important; }
+    .player-row[data-status="study"] { background: #fff3e0 !important; }
+    .player-name { color: #000 !important; }
+    .td-num { color: #666 !important; }
+  </style>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
