@@ -1083,7 +1083,11 @@ function setupLoginHandlers() {
   const loginBtn = document.getElementById('login-btn');
   const emailInput = document.getElementById('login-email');
   const passwordInput = document.getElementById('login-password');
+  const rememberCheckbox = document.getElementById('remember-email');
   const errorDiv = document.getElementById('login-error');
+
+  // Cargar email recordado al iniciar
+  loadRememberedEmail();
 
   const handleLogin = () => {
     const email = emailInput.value.trim();
@@ -1098,36 +1102,46 @@ function setupLoginHandlers() {
     loginBtn.textContent = '🔄 Iniciando sesión...';
     errorDiv.hidden = true;
 
-    auth.signInWithEmailAndPassword(email, password)
-      .then(() => {
-        showToast('¡Bienvenido! 👋');
-      })
-      .catch(error => {
-        console.error('Login error:', error);
-        let message = 'Error al iniciar sesión';
-        
-        switch(error.code) {
-          case 'auth/invalid-email':
-            message = 'Email inválido';
-            break;
-          case 'auth/user-disabled':
-            message = 'Usuario deshabilitado';
-            break;
-          case 'auth/user-not-found':
-            message = 'Usuario no encontrado';
-            break;
-          case 'auth/wrong-password':
-            message = 'Contraseña incorrecta';
-            break;
-          case 'auth/invalid-credential':
-            message = 'Credenciales inválidas';
-            break;
-        }
-        
-        showLoginError(message);
-        loginBtn.disabled = false;
-        loginBtn.textContent = '🔐 Iniciar Sesión';
-      });
+    // Configurar persistencia de sesión
+    const persistence = firebase.auth.Auth.Persistence.LOCAL; // Mantener sesión
+    
+    auth.setPersistence(persistence).then(() => {
+      return auth.signInWithEmailAndPassword(email, password);
+    }).then(() => {
+      // Guardar email si está marcado "recordar"
+      if (rememberCheckbox.checked) {
+        localStorage.setItem('rugby_remembered_email', email);
+      } else {
+        localStorage.removeItem('rugby_remembered_email');
+      }
+      
+      showToast('¡Bienvenido! 👋');
+    }).catch(error => {
+      console.error('Login error:', error);
+      let message = 'Error al iniciar sesión';
+      
+      switch(error.code) {
+        case 'auth/invalid-email':
+          message = 'Email inválido';
+          break;
+        case 'auth/user-disabled':
+          message = 'Usuario deshabilitado';
+          break;
+        case 'auth/user-not-found':
+          message = 'Usuario no encontrado';
+          break;
+        case 'auth/wrong-password':
+          message = 'Contraseña incorrecta';
+          break;
+        case 'auth/invalid-credential':
+          message = 'Credenciales inválidas';
+          break;
+      }
+      
+      showLoginError(message);
+      loginBtn.disabled = false;
+      loginBtn.textContent = '🔐 Iniciar Sesión';
+    });
   };
 
   loginBtn.addEventListener('click', handleLogin);
@@ -1139,6 +1153,22 @@ function setupLoginHandlers() {
   emailInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') passwordInput.focus();
   });
+}
+
+function loadRememberedEmail() {
+  const rememberedEmail = localStorage.getItem('rugby_remembered_email');
+  const emailInput = document.getElementById('login-email');
+  const rememberCheckbox = document.getElementById('remember-email');
+  
+  if (rememberedEmail) {
+    emailInput.value = rememberedEmail;
+    rememberCheckbox.checked = true;
+    // Enfocar el campo de contraseña si hay email recordado
+    document.getElementById('login-password').focus();
+  } else {
+    // Enfocar el campo de email si no hay email recordado
+    emailInput.focus();
+  }
 }
 
 function showLoginError(message) {
