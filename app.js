@@ -323,7 +323,7 @@ function getFilterLabel(filter) {
     injured: 'Lesionado-Ausente',
     travel: 'Viaje',
     study: 'Estudio',
-    unknown: 'Desconocido'
+    unknown: 'Llegada-Tarde'
   };
   return labels[filter] || filter;
 }
@@ -542,7 +542,7 @@ function exportSelectedDatesToExcel(selectedDates) {
           case 'injured': statusText = 'Lesionado-Ausente'; break;
           case 'travel': statusText = 'Viaje'; break;
           case 'study': statusText = 'Estudio'; break;
-          default: statusText = 'Desconocido';
+          default: statusText = 'Llegada-Tarde';
         }
         data.push([idx + 1, player.name, statusText]);
       });
@@ -561,7 +561,7 @@ function exportSelectedDatesToExcel(selectedDates) {
       data.push(['Lesionado-Ausente', counts.injured]);
       data.push(['Viaje', counts.travel]);
       data.push(['Estudio', counts.study]);
-      data.push(['Desconocido', counts.unknown]);
+      data.push(['Llegada-Tarde', counts.unknown]);
       
       const ws = XLSX.utils.aoa_to_sheet(data);
       
@@ -605,7 +605,7 @@ function exportStatsToExcel() {
     const playerData = [
       ['Fuengirola RC M-18 - Estadísticas por Jugador'],
       [],
-      ['Jugador', 'Presente', 'Lesionado-Presente', 'Lesionado-Ausente', 'Viaje', 'Estudio', 'Desconocido', 'Total Sesiones', '% Asistencia']
+      ['Jugador', 'Presente', 'Lesionado-Presente', 'Lesionado-Ausente', 'Viaje', 'Estudio', 'Llegada-Tarde', 'Total Sesiones', '% Asistencia']
     ];
     
     roster.forEach(player => {
@@ -664,7 +664,7 @@ function exportStatsToExcel() {
     summaryData.push(['Lesionado-Ausente', (avgStats.injured / numSessions).toFixed(1)]);
     summaryData.push(['Viaje', (avgStats.travel / numSessions).toFixed(1)]);
     summaryData.push(['Estudio', (avgStats.study / numSessions).toFixed(1)]);
-    summaryData.push(['Desconocido', (avgStats.unknown / numSessions).toFixed(1)]);
+    summaryData.push(['Llegada-Tarde', (avgStats.unknown / numSessions).toFixed(1)]);
     
     // Hoja 3: Historial completo
     const historyData = [
