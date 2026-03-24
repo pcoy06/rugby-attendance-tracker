@@ -141,12 +141,13 @@ body {
 }
 
 .logo-badge {
-  width: 56px; height: 56px;
+  width: 64px; height: 64px;
   flex-shrink: 0;
 }
 .logo-img {
-  width: 56px; height: 56px;
+  width: 64px; height: 64px;
   object-fit: contain;
+  display: block;
 }
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 16px rgba(0, 230, 118, 0.3); }
