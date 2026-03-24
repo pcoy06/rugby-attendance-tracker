@@ -367,6 +367,17 @@ body {
   width: 100%;
 }
 .search-input::placeholder { color: var(--text-muted); }
+.search-clear {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: .85rem;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.search-clear:hover { color: var(--text-primary); }
 
 /* Filter chips */
 .filter-chips {

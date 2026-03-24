@@ -932,8 +932,17 @@ function initializeApp() {
   });
 
   // --- Search ---
-  document.getElementById('search-input').addEventListener('input', e => {
+  const searchInput = document.getElementById('search-input');
+  const searchClear = document.getElementById('search-clear');
+  searchInput.addEventListener('input', e => {
+    searchClear.style.display = e.target.value ? 'block' : 'none';
     renderTable(currentDate, e.target.value);
+  });
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClear.style.display = 'none';
+    renderTable(currentDate, '');
+    searchInput.focus();
   });
 
   // --- Filter chips ---
