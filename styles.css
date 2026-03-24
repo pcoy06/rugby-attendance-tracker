@@ -144,13 +144,13 @@ body {
   width: 56px; height: 56px;
   border-radius: 50%;
   background: transparent;
-  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
   flex-shrink: 0;
 }
 .logo-img {
-  width: 100%; height: 100%;
+  width: 56px; height: 56px;
   border-radius: 50%;
-  object-fit: contain;
+  object-fit: cover;
 }
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 16px rgba(0, 230, 118, 0.3); }
