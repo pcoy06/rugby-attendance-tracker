@@ -142,15 +142,11 @@ body {
 
 .logo-badge {
   width: 56px; height: 56px;
-  border-radius: 50%;
-  background: transparent;
-  overflow: hidden;
   flex-shrink: 0;
 }
 .logo-img {
   width: 56px; height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
+  object-fit: contain;
 }
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 16px rgba(0, 230, 118, 0.3); }
